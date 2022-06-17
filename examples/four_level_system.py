@@ -47,7 +47,7 @@ B_up_dm = np.matmul(B_plus, B_minus)
 
 end_time = 10
 # initial_field = np.sqrt(0.01)
-initial_state = np.matmul(sigma_minus, sigma_plus)  # spin down
+initial_state = np.matmul(np.matmul(sigma_minus, sigma_plus), np.matmul(B_minus, B_plus))  # electronic and vibrational unexcited
 
 
 def Hamiltonian(_, field):
@@ -55,7 +55,7 @@ def Hamiltonian(_, field):
 
 
 def field_EOM(_, state, field):
-    expectation_value_sigma_minus = np.matmul(sigma_minus, state).trace().real
+    expectation_value_sigma_minus = np.matmul(sigma_minus, state).trace()
     return -(1j * omega_c + kappa) * field - 0.5j * gn * expectation_value_sigma_minus
 
 
@@ -71,9 +71,9 @@ correlations = oqupy.PowerLawSD(alpha=a, zeta=1, cutoff=omega_cutoff, cutoff_typ
 
 bath = oqupy.Bath(np.kron(oqupy.operators.sigma("z"), I_2D) / 2.0, correlations)
 
-pt_tempo_parameters = oqupy.TempoParameters(dt=0.01, dkmax=20, epsrel=10 ** (-7))
+pt_tempo_parameters = oqupy.TempoParameters(dt=0.1, dkmax=20, epsrel=10 ** (-7))
 
-process_tensor = oqupy.pt_tempo_compute(bath=bath, start_time=0.0, end_time=1, parameters=pt_tempo_parameters)
+process_tensor = oqupy.pt_tempo_compute(bath=bath, start_time=0.0, end_time=end_time, parameters=pt_tempo_parameters)
 
 control = None  # oqupy.Control(2)
 
@@ -85,17 +85,21 @@ dynamics = oqupy.compute_dynamics_with_field(
     start_time=0.0,
     initial_state=initial_state)
 
-print(f"The the final time t = {dynamics.times[-1]:.1f} the field is {dynamics.fields[-1]:.8g} and the state is: {dynamics.states[-1]}")
+print(f"The the final time t = {dynamics.times[-1]:.1f} the field is {dynamics.fields[-1]:.8g} and the state is:")
+print(dynamics.states[-1])
 
 t, s_x = dynamics.expectations(np.kron(oqupy.operators.sigma("x"), I_2D) / 2, real=True)
 _, s_z = dynamics.expectations(np.kron(oqupy.operators.sigma("z"), I_2D) / 2, real=True)
+_, B_B = dynamics.expectations(np.matmul(B_plus, B_minus) / 2, real=True)
 _, fields = dynamics.field_expectations()
-fig, axes = plt.subplots(2, figsize=(9, 10))
+fig, axes = plt.subplots(3, figsize=(9, 10))
 axes[0].plot(t, s_z)
-axes[1].plot(t, np.abs(fields) ** 2)
-axes[1].set_xlabel("t")
-axes[0].set_ylabel("<S_z>")
-axes[1].set_ylabel("n")
+axes[1].plot(t, B_B)
+axes[2].plot(t, np.abs(fields) ** 2)
+axes[1].set_xlabel("$t$")
+axes[0].set_ylabel("$\\langle S_z\\rangle$")
+axes[1].set_ylabel("$B^\\dagger B$")
+axes[2].set_ylabel("$n$")
 plt.tight_layout()
 
 plt.show()
