@@ -34,15 +34,15 @@ omega_c = 0.0  # cavity frequency
 kappa = 0.1  # field decay
 # Sx = np.array([[0, 0.5], [0.5, 0]])
 
-sigma_plus_2D = oqupy.operators.sigma("-")
-sigma_minus_2D = oqupy.operators.sigma("+")
+sigma_plus_2D = oqupy.operators.sigma("+")
+sigma_minus_2D = oqupy.operators.sigma("-")
 I_2D = oqupy.operators.identity(2)
 
 sigma_plus = np.kron(sigma_plus_2D, I_2D)
 sigma_minus = np.kron(sigma_minus_2D, I_2D)
 sigma_up_dm = np.matmul(sigma_plus, sigma_minus)
-B_plus = np.kron(I_2D, sigma_plus_2D)
-B_minus = np.kron(I_2D, sigma_minus_2D)
+B_plus = np.kron(I_2D, sigma_minus_2D)
+B_minus = np.kron(I_2D, sigma_plus_2D)
 B_up_dm = np.matmul(B_plus, B_minus)
 
 end_time = 10
