@@ -6,6 +6,7 @@
 local_dev/
 *local_dev*
 .vscode/
+.idea/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
