@@ -18,7 +18,7 @@ import oqupy.operators as op
 # Output files
 data_dir = 'data'
 fig_dir = 'figures'
-dynamics_plotfp = os.path.join(fig_dir, 'dynamics_plot.pdf')
+dynamics_plotfp = os.path.join(fig_dir, 'dynamics_plot.png')
 datafp = os.path.join(data_dir, 'dynamics_correlators.pkl')
 if not os.path.isdir(data_dir):
     os.makedirs(data_dir)
@@ -42,7 +42,7 @@ a = 0.25
 T = 0.026
 
 # System parameters
-dim = 2
+dim = 4
 wc = 0.0
 gn = 0.2
 gam_down = 0.01
