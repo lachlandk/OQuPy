@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import oqupy
@@ -83,7 +84,7 @@ def n_level_system_dynamics(n, end_time=10.0):
 
 
 if __name__ == "__main__":
-    system = n_level_system_dynamics(2, end_time=1)
+    system = n_level_system_dynamics(2, end_time=1500)
     times = system["times"]
     sigma_z = system["expectations"]["sigma_z"]
     B_dagger_B = system["expectations"]["B_dagger_B"]
@@ -102,4 +103,5 @@ if __name__ == "__main__":
     axes[3].set_xlabel("$t$")
     plt.tight_layout()
 
+    fig.savefig(os.path.join("figures", "n_level_system.png"), bbox_inches="tight")
     plt.show()
