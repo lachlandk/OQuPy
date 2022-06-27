@@ -76,27 +76,30 @@ def n_level_system_dynamics(n, end_time=10.0):
         "expectations": {
             "sigma_z": dynamics.expectations(np.kron(oqupy.operators.sigma("z"), I_ND), real=True)[1],
             "B_dagger_B": dynamics.expectations(np.matmul(B_plus, B_minus), real=True)[1],
+            "B+B_dagger": dynamics.expectations(B_minus + B_plus, real=True)[1],
             "field": dynamics.field_expectations()[1]
         }
     }
 
 
 if __name__ == "__main__":
-    for n in range(2, 6):
-        system = n_level_system_dynamics(n, end_time=10)
-        times = system["times"]
-        sigma_z = system["expectations"]["sigma_z"]
-        B_dagger_B = system["expectations"]["B_dagger_B"]
-        field = system["expectations"]["field"]
+    system = n_level_system_dynamics(2, end_time=1)
+    times = system["times"]
+    sigma_z = system["expectations"]["sigma_z"]
+    B_dagger_B = system["expectations"]["B_dagger_B"]
+    BpB_dagger = system["expectations"]["B+B_dagger"]
+    field = system["expectations"]["field"]
 
-        fig, axes = plt.subplots(3, figsize=(9, 12))
-        axes[0].plot(times, sigma_z)
-        axes[1].plot(times, B_dagger_B)
-        axes[2].plot(times, np.abs(field) ** 2)
-        axes[0].set_ylabel("$\\langle S_z\\rangle$")
-        axes[1].set_ylabel("$B^\\dagger B$")
-        axes[2].set_ylabel("$n$")
-        axes[2].set_xlabel("$t$")
-        plt.tight_layout()
+    fig, axes = plt.subplots(4, figsize=(10, 14))
+    axes[0].plot(times, sigma_z)
+    axes[1].plot(times, B_dagger_B)
+    axes[2].plot(times, BpB_dagger)
+    axes[3].plot(times, np.abs(field) ** 2)
+    axes[0].set_ylabel("$\\langle S_z\\rangle$")
+    axes[1].set_ylabel("$B^\\dagger B$")
+    axes[2].set_ylabel("$B+B^\\dagger$")
+    axes[3].set_ylabel("$n$")
+    axes[3].set_xlabel("$t$")
+    plt.tight_layout()
 
-        plt.show()
+    plt.show()
