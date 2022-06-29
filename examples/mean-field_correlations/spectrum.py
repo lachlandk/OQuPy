@@ -11,7 +11,7 @@ plt.rc('text')
 plt.rc('font', **{'size': 14})
 
 # input file
-inputfp = 'data/dynamics_correlators.pkl'
+inputfp = 'mean-field_correlations/data/dynamics_correlators.pkl'
 
 # load
 with open(inputfp, 'rb') as fb:
