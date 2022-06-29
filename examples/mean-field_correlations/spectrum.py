@@ -7,9 +7,8 @@ import pickle
 import matplotlib.pyplot as plt
 import numpy as np
 
-plt.rc('text', usetex=True)
+plt.rc('text')
 plt.rc('font', **{'size': 14})
-plt.rc('text.latex', preamble=r'\usepackage{amsmath}')
 
 # input file
 inputfp = 'data/dynamics_correlators.pkl'
@@ -71,19 +70,19 @@ fig1, axes1 = plt.subplots(2, figsize=(9, 6), sharex="all")
 fig2, ax2 = plt.subplots(figsize=(9, 4))
 fig3, ax3 = plt.subplots(figsize=(9, 4))
 
-axes1[1].set_xlabel('\(t\)')
-axes1[0].plot(times, np.real(smsp), label=r'\(\text{Re}\langle \sigma^-(t) \sigma^+(0) \rangle\)')
-axes1[0].plot(times, np.imag(smsp), label=r'\(\text{Im}\langle \sigma^-(t) \sigma^+(0) \rangle\)')
-axes1[1].plot(times, np.real(spsm), label=r'\(\text{Re}\langle \sigma^+(t) \sigma^-(0) \rangle\)')
-axes1[1].plot(times, np.imag(spsm), label=r'\(\text{Im}\langle \sigma^+(t) \sigma^-(0) \rangle\)')
+axes1[1].set_xlabel('$t$')
+axes1[0].plot(times, np.real(smsp), label=r'Re$\langle \sigma^-(t) \sigma^+(0) \rangle$')
+axes1[0].plot(times, np.imag(smsp), label=r'Im$\langle \sigma^-(t) \sigma^+(0) \rangle$')
+axes1[1].plot(times, np.real(spsm), label=r'Re$\langle \sigma^+(t) \sigma^-(0) \rangle$')
+axes1[1].plot(times, np.imag(spsm), label=r'Im$\langle \sigma^+(t) \sigma^-(0) \rangle$')
 axes1[0].legend()
 axes1[1].legend()
-ax2.set_xlabel(r'\(\nu\)')
-ax2.set_ylabel(r'\(\varrho\)', rotation=0, labelpad=20)
+ax2.set_xlabel(r'$\nu$')
+ax2.set_ylabel(r'$\varrho$', rotation=0, labelpad=20)
 ax2.plot(plot_nus, spectral_weight)
 ax2.set_xlim([-300, 300])
-ax3.set_xlabel(r'\(\nu\)')
-ax3.set_ylabel(r'\(\mathcal{L}\)', rotation=0, labelpad=20)
+ax3.set_xlabel(r'$\nu$')
+ax3.set_ylabel(r'$\mathcal{L}$', rotation=0, labelpad=20)
 ax3.plot(plot_nus, pl)
 ax3.set_xlim([-300, 300])
 fig1.savefig('figures/correlators.png', bbox_inches='tight')
