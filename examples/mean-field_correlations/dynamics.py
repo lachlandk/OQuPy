@@ -6,7 +6,7 @@ import os
 import pickle
 import sys
 
-sys.path.insert(0, '../../')  # Make OQuPy accessible
+sys.path.insert(0, '../')  # Make OQuPy accessible
 
 import numpy as np
 import matplotlib.pyplot as plt
