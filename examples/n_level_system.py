@@ -3,6 +3,10 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
+
+sys.path.insert(0, '../')  # Make OQuPy accessible
+
 import oqupy
 
 
@@ -11,14 +15,14 @@ def n_level_system_dynamics(n, end_time=10.0):
     # define constants and system parameters
     # \hbar == k_b == 1
     end_time = end_time
-    alpha = 0.1  # coupling strength
-    temperature = 0.1  # environment temperature
-    nu_c = 5.0  # environment cutoff frequency
+    alpha = 0.25  # coupling strength
+    temperature = 0.026  # environment temperature
+    nu_c = 0.15  # environment cutoff frequency
     omega_0 = 0.0  # two-level system frequency (set to 0)
     gn = 0.2  # Twice Rabi splitting (light-matter coupling)
     sqrt_s = 1.0  # Huang-Rhys parameter (strength of light-matter coupling)
     omega_c = 0.0  # cavity frequency
-    kappa = 0.1  # field decay
+    kappa = 0.01  # field decay
     Gamma_up = 0.01  # incoherent gain (electronic gain)
     Gamma_down = 0.01  # incoherent loss (electronic dissipation)
     omega_v = 1.0  # vibrational system frequency
@@ -38,7 +42,7 @@ def n_level_system_dynamics(n, end_time=10.0):
     B_up_dm = np.matmul(B_plus, B_minus)
 
     # compute dynamics
-    initial_field = 1.0 + 1.0j
+    initial_field = np.sqrt(0.05)
     initial_state = np.matmul(np.matmul(sigma_minus, sigma_plus),
                               np.matmul(B_minus, B_plus))  # electronic and vibrational unexcited
 
@@ -60,7 +64,7 @@ def n_level_system_dynamics(n, end_time=10.0):
     correlations = oqupy.PowerLawSD(alpha=alpha, zeta=1, cutoff=nu_c, cutoff_type="gaussian",
                                     temperature=temperature)
     bath = oqupy.Bath(np.kron(oqupy.operators.sigma("z"), I_ND) / 2.0, correlations)
-    pt_tempo_parameters = oqupy.TempoParameters(dt=0.1, dkmax=20, epsrel=10 ** (-7))
+    pt_tempo_parameters = oqupy.TempoParameters(dt=0.5, dkmax=20, epsrel=10 ** (-4))
     process_tensor = oqupy.pt_tempo_compute(bath=bath, start_time=0.0, end_time=end_time,
                                             parameters=pt_tempo_parameters)
 
