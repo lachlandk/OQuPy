@@ -60,9 +60,8 @@ initial_field = np.sqrt(0.05)
 # Computational parameters
 # N.B. Not sensible values!
 ts = 1000  # steady-state time
-tp = 800  # time to measure field period from (should really be in steady-state by tp)
+tp = 800   # time to measure field period from (should really be in steady-state by tp)
 tf = 1500  # final time
-rotating_frame_freq = None  # record rotating frame freq. (used below)
 dt = 0.5
 dkmax = 20
 epsrel = 10**(-4)
@@ -82,13 +81,22 @@ def store_local_field(t, a):
         local_fields.append(a)
 
 
+# code to determine system frequency in lasing state (stored in save_dic below for use in spectrum.py)
+zero_cutoff = 1e-3 # consider field non-zero if absolute value exceeds this in steady-state
+lasing = False # Flag to indicate lasing state reached
+rotating_frame_freq = None  # record rotating frame freq. (used below). Should be non-zero in lasing state
 # Measure period of oscillation and adjust global variables w0 and wc
-# For multiple systems would need to adjust each w0
 def move_to_rotating_frame():
-    global rotating_frame_freq, w0, wc
+    global lasing, rotating_frame_freq, w0, wc
     start_step = round(tp/dt)
     end_step = None
     field_samples = local_fields[start_step:end_step]
+    # no action if in normal state
+    if np.isclose(np.abs(field_samples[-1]), 0.0, atol=zero_cutoff):
+        print('Normal state likely as field magnitude less than 1e-3. Not rotating frame transformation.')
+        rotating_frame_freq = 0.0
+        return
+    lasing = True
     # Array of periods measured in steps, taking each period as the time between 3 intercepts of the horizontal axis
     period_steps = []
     # count number of intercepts
@@ -189,6 +197,7 @@ control_sm.add_single(float(ts), op.left_super(sigma_m))
 control_sp.add_single(float(ts), op.left_super(sigma_p))
 
 # Two sets of dynamics, one for each two-time correlator
+# DYNAMICS 1 - For <sigma^+(t) sigma^-(0)>
 dynamics_sm = oqupy.compute_dynamics_with_field(system=system,
                                                 process_tensor=process_tensor,
                                                 initial_field=initial_field,
@@ -196,10 +205,12 @@ dynamics_sm = oqupy.compute_dynamics_with_field(system=system,
                                                 start_time=0.0,
                                                 initial_state=initial_state)
 times, sp = dynamics_sm.expectations(np.kron(oqupy.operators.sigma('+'), I_2)/2, real=False)
+print(dynamics_sm.field_expectations())
 ts_index = next((i for i, t in enumerate(times) if t >= ts), None)
 corr_times = times[ts_index:] - ts
-spsm = sp[ts_index:]
 first_rotating_frame_freq = rotating_frame_freq
+
+# DYNAMICS 2 - For <sigma^-(t) sigma^+(0)>
 # reset rotating frame frequency and local storage variables
 rotating_frame_freq = None
 local_times = [0.0]
@@ -211,7 +222,24 @@ dynamics_sp = oqupy.compute_dynamics_with_field(system=system,
                                                 start_time=0.0,
                                                 initial_state=initial_state)
 times, sm = dynamics_sp.expectations(np.kron(oqupy.operators.sigma('-'), I_2)/2, real=False)
-smsp = sm[ts_index:]  # <sigma^-(t) sigma^+(0)>
+
+# In lasing phase subtract long-time values from correlators
+if lasing:
+    # These should be equal
+    steady_spsm = np.abs(sp[ts_index-1])**2
+    steady_smsp = np.abs(sm[ts_index-1])**2 
+    assert np.isclose(steady_spsm, steady_smsp, atol=zero_cutoff)
+    print('Subtracting {:.3g}, {:.3g} from <SP(t)SM(0)>, <SM(t)SP(0)> correlators'.format(steady_spsm, steady_smsp))
+    sp -= steady_spsm
+    sm -= steady_smsp
+else:
+    # Nothing was subtracted
+    steady_spsm = 0.0
+    steady_smsp = 0.0
+# Select elements corresponding to corr_times
+spsm = sp[ts_index:]# <sigma^+(t) sigma^-(0)>
+smsp = sm[ts_index:]# <sigma^-(t) sigma^+(0)>
+
 # consistency check
 assert rotating_frame_freq == first_rotating_frame_freq
 assert len(smsp) == len(spsm) == len(corr_times)
@@ -225,9 +253,15 @@ save_dic = {
             'dt': dt,
             'wc': wc,
             'w0': w0,
-            'rotating_frame_freq': rotating_frame_freq,
             'kappa': kappa,
             'gn': gn,
+            },
+        'lasing_dic': {
+            'lasing': lasing,
+            'rotating_frame_freq': rotating_frame_freq,
+            'zero_cutoff':zero_cutoff,
+            'spsm_subtracted': steady_spsm,
+            'smsp_subtracted': steady_smsp,
             }
         }
 
