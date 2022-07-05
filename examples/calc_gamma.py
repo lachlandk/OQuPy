@@ -2,7 +2,7 @@
 
 import os, sys, json
 import matplotlib.pyplot as plt
-plt.style.use('matplotlib_style')
+# plt.style.use('matplotlib_style')
 from scipy.integrate import quad
 MAX_SUBINTERVALS=1000
 MAX_CYCLES=100
