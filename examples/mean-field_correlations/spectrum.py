@@ -11,7 +11,7 @@ plt.rc('text')
 plt.rc('font', **{'size': 14})
 
 # input file
-inputfp = 'mean-field_correlations/data/dynamics_correlators.pkl'
+inputfp = 'data/dynamics_correlators.pkl'
 
 # load
 with open(inputfp, 'rb') as fb:
@@ -26,7 +26,7 @@ dt = params['dt']
 # calculations in rotating frame, plot in original frame
 wc_rotating = params['wc'] + lasing_dic['rotating_frame_freq']
 w0_rotating = params['w0'] + lasing_dic['rotating_frame_freq']
-nus = 2 * np.pi * np.fft.fftshift(np.fft.fftfreq(len(times), d=dt))
+nus = np.pad(2 * np.pi * np.fft.fftshift(np.fft.fftfreq(len(times), d=dt)), (0, 4 * len(times)))
 plot_nus = 1e3 * (nus - lasing_dic['rotating_frame_freq'])  # units meV
 
 # In lasing phase have singularity in Keldysh part -> PL
@@ -36,8 +36,8 @@ if lasing_dic['lasing']:
     lasing_index = next((i for i, nu in enumerate(nus) if nu >= 0.0), None)
 
 # calculate self-energies
-fft_smsp = np.fft.fftshift(dt * np.fft.ifft(smsp, norm='forward'))
-fft_spsm_conjugate = np.fft.fftshift(dt * np.fft.ifft(np.conjugate(spsm), norm='forward'))
+fft_smsp = np.pad(np.fft.fftshift(dt * np.fft.ifft(smsp, norm='forward')), (0, 4 * len(times)))
+fft_spsm_conjugate = np.pad(np.fft.fftshift(dt * np.fft.ifft(np.conjugate(spsm), norm='forward')), (0, 4 * len(times)))
 # Sigma^{-+}
 energy_mp = -(1j/4)*params['gn']**2*(fft_smsp-fft_spsm_conjugate)
 # Sigma^{--} 
