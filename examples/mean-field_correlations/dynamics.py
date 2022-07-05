@@ -16,7 +16,7 @@ import oqupy.operators as op
 
 
 # Output files
-data_dir = 'data'
+data_dir = 'mean-field_correlations/data'
 fig_dir = 'figures'
 dynamics_plotfp = os.path.join(fig_dir, 'dynamics_plot.png')
 datafp = os.path.join(data_dir, 'dynamics_correlators.pkl')
