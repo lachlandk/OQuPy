@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import sys
 import json
 
-sys.path.insert(0, ".")
+sys.path.insert(0, "../")
 
 import oqupy
 
