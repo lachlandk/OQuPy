@@ -1,0 +1,15 @@
+{
+	"nu_c": 0.15,
+	"alpha": 0.25,
+	"T": 0.026,
+	"omega_0": 0.0,
+	"gn": 0.2,
+	"sqrt_s": 0.1,
+	"omega_c": 0.0,
+	"kappa": 0.01,
+	"Gamma_up": 0.01,
+	"Gamma_down": 0.01,
+	"omega_v": 0.1,
+	"v_gamma_up": 0.1,
+	"v_gamma_down": 0.1
+}
