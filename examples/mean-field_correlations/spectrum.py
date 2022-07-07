@@ -11,6 +11,7 @@ plt.rc('text')
 plt.rc('font', **{'size': 14})
 
 # input file
+# inputfp = 'data/dynamics_correlators.pkl'
 inputfp = 'mean-field_correlations/data/dynamics_correlators.pkl'
 
 # load
@@ -36,8 +37,8 @@ if lasing_dic['lasing']:
     lasing_index = next((i for i, nu in enumerate(nus) if nu >= 0.0), None)
 
 # calculate self-energies
-fft_smsp = np.fft.fftshift(dt * np.pad(np.fft.ifft(smsp, norm='forward'), (0, 4 * len(times))))
-fft_spsm_conjugate = np.fft.fftshift(dt * np.pad(np.fft.ifft(np.conjugate(spsm), norm='forward'), (0, 4 * len(times))))
+fft_smsp = np.fft.fftshift(dt * np.fft.ifft(np.pad(smsp, (0, 4 * len(times))), norm='forward'))
+fft_spsm_conjugate = np.fft.fftshift(dt * np.fft.ifft(np.conjugate(np.pad(spsm, (0, 4 * len(times)))), norm='forward'))
 # Sigma^{-+}
 energy_mp = -(1j/4)*params['gn']**2*(fft_smsp-fft_spsm_conjugate)
 # Sigma^{--} 
@@ -87,7 +88,7 @@ axes1[1].legend()
 ax2.set_xlabel(r'$\nu$')
 ax2.set_ylabel(r'$\varrho$', rotation=0, labelpad=20)
 ax2.plot(plot_nus, spectral_weight/np.max(spectral_weight)) # Normalise
-ax2.set_xlim([-300, 300])
+# ax2.set_xlim([-300, 300])
 ax3.set_xlabel(r'$\nu$')
 ax3.set_ylabel(r'$\mathcal{L}$', rotation=0, labelpad=20)
 ax3.plot(plot_nus, pl/np.max(pl)) # Normalise
@@ -108,7 +109,7 @@ if lasing_dic['lasing']:
         ax3.annotate('', xy=(lasing_freq, arrow_height), xytext=(lasing_freq, 0.99*pl_at_lasing),
                 arrowprops=dict(arrowstyle='-', color=ax3.lines[-1].get_color(), linewidth=2.5),
                 annotation_clip=False)
-ax3.set_xlim([-300, 300])
+# ax3.set_xlim([-300, 300])
 fig1.savefig('figures/correlators.png', bbox_inches='tight')
 fig2.savefig('figures/spectral_weight.png', bbox_inches='tight')
 fig3.savefig('figures/photoluminescence.png', bbox_inches='tight')
