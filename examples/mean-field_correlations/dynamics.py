@@ -5,6 +5,7 @@
 import os
 import pickle
 import sys
+import json
 
 sys.path.insert(0, '../')  # Make OQuPy accessible
 
@@ -36,22 +37,25 @@ B_p = np.kron(I_2, oqupy.operators.create(2))
 B_m = np.kron(I_2, oqupy.operators.destroy(2))
 B_up = np.matmul(B_p, B_m)
 
+parameters_file = open("parameters.json")
+parameters = json.load(parameters_file)
+
 # Bath parameters
-nu_c = 0.15
-a = 0.25
-T = 0.026
+a = parameters["alpha"]  # coupling strength
+T = parameters["temperature"]  # environment temperature
+nu_c = parameters["nu_c"]  # environment cutoff frequency
 
 # System parameters
 dim = 4
-wc = 0.0
-gn = 0.2
-gam_down = 0.01
-gam_up = 0.01
-kappa = 0.01
-
-w0 = 0.0
-wv = 1.0  # TODO: find a sensible value for this
-sqrt_s = np.sqrt(1.0)  # TODO: this as well
+w0 = parameters["omega_0"]  # two-level system frequency (set to 0)
+gn = parameters["gn"]  # Twice Rabi splitting (light-matter coupling)
+sqrt_s = parameters["sqrt_s"]  # Huang-Rhys parameter (strength of light-matter coupling)
+omega_c = parameters["omega_c"]  # cavity frequency
+kappa = parameters["kappa"]  # field decay
+gam_up = parameters["Gamma_up"]  # incoherent gain (electronic gain)
+gam_down = parameters["Gamma_down"]  # incoherent loss (electronic dissipation)
+wv = parameters["omega_v"]  # vibrational system frequency
+parameters_file.close()
 
 # Initial conditions
 initial_state = np.matmul(np.matmul(sigma_m, sigma_p), np.matmul(B_m, B_p))  # electronic and vibrational unexcited

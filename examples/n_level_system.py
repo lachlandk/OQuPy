@@ -4,6 +4,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
+import json
 
 sys.path.insert(0, '../')  # Make OQuPy accessible
 
@@ -11,23 +12,24 @@ import oqupy
 
 
 def n_level_system_dynamics(n, end_time=10.0):
-
     # define constants and system parameters
     # \hbar == k_b == 1
-    end_time = end_time
-    alpha = 0.25  # coupling strength
-    temperature = 0.026  # environment temperature
-    nu_c = 0.15  # environment cutoff frequency
-    omega_0 = 0.0  # two-level system frequency (set to 0)
-    gn = 0.2  # Twice Rabi splitting (light-matter coupling)
-    sqrt_s = 1.0  # Huang-Rhys parameter (strength of light-matter coupling)
-    omega_c = 0.0  # cavity frequency
-    kappa = 0.01  # field decay
-    Gamma_up = 0.01  # incoherent gain (electronic gain)
-    Gamma_down = 0.01  # incoherent loss (electronic dissipation)
-    omega_v = 1.0  # vibrational system frequency
-    v_gamma_up = 0.1
-    v_gamma_down = 0.1
+    parameters_file = open("parameters.json")
+    parameters = json.load(parameters_file)
+    alpha = parameters["alpha"]  # coupling strength
+    temperature = parameters["temperature"]  # environment temperature
+    nu_c = parameters["nu_c"]  # environment cutoff frequency
+    omega_0 = parameters["omega_0"]  # two-level system frequency (set to 0)
+    gn = parameters["gn"]  # Twice Rabi splitting (light-matter coupling)
+    sqrt_s = parameters["sqrt_s"]  # Huang-Rhys parameter (strength of light-matter coupling)
+    omega_c = parameters["omega_c"]  # cavity frequency
+    kappa = parameters["kappa"]  # field decay
+    Gamma_up = parameters["Gamma_up"]  # incoherent gain (electronic gain)
+    Gamma_down = parameters["Gamma_down"]  # incoherent loss (electronic dissipation)
+    omega_v = parameters["omega_v"]  # vibrational system frequency
+    v_gamma_up = parameters["v_gamma_up"]
+    v_gamma_down = parameters["v_gamma_down"]
+    parameters_file.close()
     
     # compute operators
     I_2D = oqupy.operators.identity(2)
