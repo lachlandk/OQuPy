@@ -15,17 +15,17 @@ if __name__ == "__main__":
     # \hbar == k_b == 1
     parameters_file = open("parameters.json")
     parameters = json.load(parameters_file)
+    sqrt_s = float(sys.argv[1]) if len(sys.argv) >= 2 else parameters["sqrt_s"]  # Huang-Rhys parameter (strength of light-matter coupling)
+    nu_c = float(sys.argv[2]) if len(sys.argv) >= 3 else parameters["nu_c"]  # environment cutoff frequency
+    omega_v = float(sys.argv[3]) if len(sys.argv) >= 4 else parameters["omega_v"]  # vibrational system frequency
+    omega_c = float(sys.argv[4]) if len(sys.argv) >= 5 else parameters["omega_c"]  # cavity frequency
     alpha = parameters["alpha"]  # coupling strength
     temperature = parameters["temperature"]  # environment temperature
-    nu_c = parameters["nu_c"]  # environment cutoff frequency
     omega_0 = parameters["omega_0"]  # two-level system frequency (set to 0)
     gn = parameters["gn"]  # Twice Rabi splitting (light-matter coupling)
-    sqrt_s = parameters["sqrt_s"]  # Huang-Rhys parameter (strength of light-matter coupling)
-    omega_c = parameters["omega_c"]  # cavity frequency
     kappa = parameters["kappa"]  # field decay
     Gamma_up = parameters["Gamma_up"]  # incoherent gain (electronic gain)
     Gamma_down = parameters["Gamma_down"]  # incoherent loss (electronic dissipation)
-    omega_v = parameters["omega_v"]  # vibrational system frequency
     v_gamma_up = 1.63e-06  # from calc_gamma.py
     v_gamma_down = 0.0244
 
