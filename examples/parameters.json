@@ -1,7 +1,7 @@
 {
 	"nu_c": 0.15,
 	"alpha": 0.25,
-	"T": 0.026,
+	"temperature": 0.026,
 	"omega_0": 0.0,
 	"gn": 0.2,
 	"sqrt_s": 0.1,
@@ -11,5 +11,8 @@
 	"Gamma_down": 0.01,
 	"omega_v": 0.1,
 	"v_gamma_up": 0.1,
-	"v_gamma_down": 0.1
+	"v_gamma_down": 0.1,
+	"dt": 0.5,
+	"dkmax": 200,
+	"epsrel": -7
 }

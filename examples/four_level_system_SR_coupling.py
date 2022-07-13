@@ -27,6 +27,11 @@ def four_level_system_dynamics(end_time=10.0):
     Gamma_up = parameters["Gamma_up"]  # incoherent gain (electronic gain)
     Gamma_down = parameters["Gamma_down"]  # incoherent loss (electronic dissipation)
     omega_v = parameters["omega_v"]  # vibrational system frequency
+
+    # computational parameters
+    dt = parameters["dt"]
+    dkmax = parameters["dkmax"]
+    epsrel = 10 ** parameters["epsrel"]
     parameters_file.close()
     
     # compute operators
@@ -62,17 +67,24 @@ def four_level_system_dynamics(end_time=10.0):
     correlations = oqupy.PowerLawSD(alpha=alpha, zeta=1, cutoff=nu_c, cutoff_type="gaussian",
                                     temperature=temperature)
     bath = oqupy.Bath(1/np.sqrt(2) * tau_x, correlations)
-    pt_tempo_parameters = oqupy.TempoParameters(dt=0.5, dkmax=20, epsrel=10 ** (-4))
-    process_tensor = oqupy.pt_tempo_compute(bath=bath, start_time=0.0, end_time=end_time,
-                                            parameters=pt_tempo_parameters)
+    tempo_parameters = oqupy.TempoParameters(dt=dt, dkmax=dkmax, epsrel=epsrel)
+    # process_tensor = oqupy.pt_tempo_compute(bath=bath, start_time=0.0, end_time=end_time, parameters=pt_tempo_parameters)
 
-    dynamics = oqupy.compute_dynamics_with_field(
-        system=td_system,
-        process_tensor=process_tensor,
-        control=None,
-        start_time=0.0,
-        initial_state=initial_state,
-        initial_field=initial_field)
+    # dynamics = oqupy.compute_dynamics_with_field(
+    #     system=td_system,
+    #     process_tensor=process_tensor,
+    #     control=None,
+    #     start_time=0.0,
+    #     initial_state=initial_state,
+    #     initial_field=initial_field)
+
+    tempo_sm = oqupy.TempoWithField(system=td_system,
+                                    bath=bath,
+                                    initial_field=initial_field,
+                                    initial_state=initial_state,
+                                    start_time=0.0,
+                                    parameters=tempo_parameters)
+    dynamics = tempo_sm.compute(end_time=tf)
 
     return {
         "times": dynamics.times,
