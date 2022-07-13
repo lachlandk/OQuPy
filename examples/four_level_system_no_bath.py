@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 import json
+import pickle
 
 sys.path.insert(0, "../")
 
@@ -96,13 +97,35 @@ if __name__ == "__main__":
 
     times = dynamics.times
     trace_delta = np.abs(np.trace(dynamics.states[-1]) - np.trace(dynamics.states[0]))
+    exp_sigma_z = dynamics.expectations(np.kron(oqupy.operators.sigma("z"), I_2), real=True)[1]
+    exp_tau_p_tau_m = dynamics.expectations(np.matmul(tau_plus, tau_minus), real=True)[1]
+    exp_tau_m_p_tau_p = dynamics.expectations(tau_minus + tau_plus, real=True)[1]
+    exp_field = dynamics.field_expectations()[1]
+
+    with open(os.path.join("data", f"4_level_system_SR_coupling_sqrt_s{sqrt_s}_nu_c{nu_c}_omega_v{omega_v}_omega_c{omega_c}.pkl"), "wb") as file:
+        pickle.dump({
+            "times": times,
+            "states": dynamics.states,
+            "expectations": {
+                "sigma_z": exp_sigma_z,
+                "tau_p_tau_m": exp_tau_p_tau_m,
+                "tau_m_p_tau_p": exp_tau_m_p_tau_p,
+                "field": exp_field
+            },
+            "parameters": {
+                "sqrt_s": sqrt_s,
+                "nu_c": nu_c,
+                "omega_v": omega_v,
+                "omega_c": omega_c
+            }
+        }, file)
 
     fig, axes = plt.subplots(4, figsize=(10, 14))
     fig.suptitle(f"Four level system no bath: sqrt_s={sqrt_s}, $\\nu_c$={nu_c}, $\\omega_v$={omega_v}, $\\omega_c$={omega_c}, trace delta = {trace_delta:.3f}")
-    axes[0].plot(times, dynamics.expectations(np.kron(oqupy.operators.sigma("z"), I_2), real=True)[1])
-    axes[1].plot(times, dynamics.expectations(np.matmul(tau_plus, tau_minus), real=True)[1])
-    axes[2].plot(times, dynamics.expectations(tau_minus + tau_plus, real=True)[1])
-    axes[3].plot(times, np.abs(dynamics.field_expectations()[1]) ** 2)
+    axes[0].plot(times, exp_sigma_z)
+    axes[1].plot(times, exp_tau_p_tau_m)
+    axes[2].plot(times, exp_tau_m_p_tau_p)
+    axes[3].plot(times, np.abs(exp_field) ** 2)
     axes[0].set_ylabel("$\\langle S_z\\rangle$")
     axes[1].set_ylabel("$\\langle\\tau^\\dagger \\tau\\rangle$")
     axes[2].set_ylabel("$\\langle\\tau+\\tau^\\dagger\\rangle$")
