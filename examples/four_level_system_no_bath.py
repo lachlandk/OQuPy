@@ -68,8 +68,8 @@ if __name__ == "__main__":
 
     gammas = [lambda t: Gamma_down, lambda t: Gamma_up, lambda t: v_gamma_down, lambda t: v_gamma_up]
     lindblad_operators = [lambda t: sigma_minus, lambda t: sigma_plus,
-                          lambda t: np.sqrt(v_gamma_down) * (tau_minus + sqrt_s * np.matmul(sigma_plus, sigma_minus)),
-                          lambda t: np.sqrt(v_gamma_up) * (tau_plus + sqrt_s * np.matmul(sigma_plus, sigma_minus))]
+                          lambda t: tau_minus + sqrt_s * np.matmul(sigma_plus, sigma_minus),
+                          lambda t: tau_plus + sqrt_s * np.matmul(sigma_plus, sigma_minus)
 
     td_system = oqupy.TimeDependentSystemWithField(Hamiltonian, field_EOM, gammas=gammas,
                                                    lindblad_operators=lindblad_operators)
